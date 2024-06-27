@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -29,18 +31,37 @@ I'll assume that's a death case as well.
 const DEBUG_PRINT bool = false
 
 func main() {
-	board, err := read_json_board("boards/spinner.json")
-	if err != nil {
-		fmt.Print(err)
+
+	var (
+		create_board = flag.Bool("create_board", false, "Create new board mode")
+		board_source = flag.String("board_json", "boards/spinner.json", "Source for board JSON. If you create a new board, that new board will be used.")
+	)
+	flag.Parse()
+
+	var board Board
+	var err error
+	if *create_board {
+		board, err = create_new_board()
+		if err != nil {
+			fmt.Print(err)
+			os.Exit(1)
+		}
+	} else {
+		board = Board{}
+		err = board.from_json(*board_source)
+		if err != nil {
+			fmt.Print(err)
+			os.Exit(1)
+		}
 	}
 
-	const sec_per_frame time.Duration = 1 // [s]
+	const time_per_frame time.Duration = 100 // check Sleep for units
 	for {
 		clear_terminal()
-		print_board(board)
+		board.print()
 
 		apply_game_of_life_rules(board)
 
-		time.Sleep(sec_per_frame * time.Second)
+		time.Sleep(time_per_frame * time.Millisecond)
 	}
 }
