@@ -18,10 +18,14 @@ I'm not sure how memory works adn this wasn't complex enough to involve anything
 
 Not too bad but the LLM was really bad at returning functional code or suddenly throwing up way too much absurdly erroneous code.
 
-That being said, I got some basic "error as values", JSON parsing/serialization, object orientation, etc.
+That being said, I got some basic "error as values", JSON parsing/serialization, object orientation, input parsing, etc.
 So all 'n all, not terrible.
-I wouldn't claim to know that much Go after this though.
-Clearly missed a lot of basic things like type coersion, parsing strings, networking, etc.
-But this project was also never designed with that in mind.
+Codellama:13b generally knew the right stdlib package to use to get the result I wanted even if the implementation it recommended was incorrect.
+Codellama:13b + LSP was a much more powerful combination.
 
-So... Mission Accomplished!...?
+Could I code up something more complex in Golang + Codellama:13b? Yeah. 
+The workflow doesn't feel great because it's back and forth with the terminal asking questions but it's not completely useless.
+There's value there as a really bad instructor; the kind of instructor whose bad advice points you in "a" direction and upsets you enough to go do better. We've all had those teachers before.
+This is that flavour of teacher concretized in weights.
+
+So... Mission Accomplished...?
