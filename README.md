@@ -29,3 +29,8 @@ There's value there as a really bad instructor; the kind of instructor whose bad
 This is that flavour of teacher concretized in weights.
 
 So... Mission Accomplished...?
+
+## Python Conclusion:
+Eh. Python's my best language.
+Codellama:13b didn't give any good advice here on the one question I asked though it might have just timed out such that my last question was without the context of the previous. 
+Something to consider.
