@@ -87,3 +87,44 @@ if __name__ == '__main__':
 ```
 =============================
 
+[2024-06-28 18:27:06.461813]
+In rust, how do I parse a JSON using serde?
+-----------------------------
+
+You can use the `serde_json` crate to deserialize JSON data in Rust. Here's an example of how you can do it:
+```rust
+use serde_json::{self};
+
+// Define your data model
+struct MyData {
+    name: String,
+    age: i32,
+}
+
+impl FromStr for MyData {
+    fn from_str(data: &[u8]) -> Result<MyData, Error> {
+        let value = serde_json::from_slice(&[0xff]); // decode the json data
+        if let Ok(value) = value {
+            let value = value.downcast(); // cast the deserialized data to the expected type
+            if let Some(value) = value {
+                return Ok(MyData { name: String::from("name"), age: value }) // build the MyData object
+            }
+        }
+    }
+}
+```
+This example uses a simple `struct` called `MyData` with two fields, `name` and `age`. The implementation of the `FromStr` trait is required to parse JSON data. You can then use this data type in your application.
+
+To parse a JSON file, you need to read it into memory as a slice of bytes. Then, you can pass that slice to the `from_str()` function of your data type to deserialize it:
+```rust
+use serde::{Serialize};
+
+// Read JSON file
+let mut buffer = [0; 4];
+std::fs::read(json_file, &mut buffer).expect("could not read file");
+
+// Parse JSON
+let value = MyData::from_str(&buffer)?; // this returns an `MyData` object if parsing succeeds or a serialization error
+```
+=============================
+
