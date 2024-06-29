@@ -37,7 +37,8 @@ Something to consider.
 
 ## Rust Conclusion:
 Close but no cigar.
-It knew that serde can be used to deserialize but didn't add the derived "Serialize" to the struct.
+It knew that serde can be used to deserialize but codellama neither added the derived "Serialize" to the struct nor recommended adding serde to the Cargo.toml with the derive feature.
+
 Also, the std::fs::read doesn't require a buffer input; that's an input required for std::io::stdin().read.
 
 Not too shabby considering the proportion of Rust code probably available to codellama for training and the bias for Python.
