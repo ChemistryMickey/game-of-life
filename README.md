@@ -34,3 +34,10 @@ So... Mission Accomplished...?
 Eh. Python's my best language.
 Codellama:13b didn't give any good advice here on the one question I asked though it might have just timed out such that my last question was without the context of the previous. 
 Something to consider.
+
+## Rust Conclusion:
+Close but no cigar.
+It knew that serde can be used to deserialize but didn't add the derived "Serialize" to the struct.
+Also, the std::fs::read doesn't require a buffer input; that's an input required for std::io::stdin().read.
+
+Not too shabby considering the proportion of Rust code probably available to codellama for training and the bias for Python.
