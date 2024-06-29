@@ -4,14 +4,14 @@
 - Write Conrad's Game of Life
     - Shall include visualization
     - Shall include way of inputting starting conditions
-    - Shall be written in Go (I've never used Golang prior to this project)
-- Learn EVERYTHING (viz, Go, etc.) just using Meta's codellama:13b (NO GOOGLING except when sanity is at stake)
+    - Shall be written in {language} (I've never used Golang prior to this project)
+- Learn EVERYTHING (viz, language, etc.) just using Meta's codellama:13b (NO GOOGLING except when sanity is at stake)
 
 ## Goals:
-- Learn Go
+- Learn {language}
 - Evaluate programmatic truthiness of solo LLM
 
-## Conclusion:
+## Go Conclusion:
 Did I learn go? Kinda not really.
 Missing out on a lot of the foundational stuff.
 I'm not sure how memory works adn this wasn't complex enough to involve anything more sophisticated.

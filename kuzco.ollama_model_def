@@ -5,8 +5,3 @@ PARAMETER mirostat_tau 2.5
 PARAMETER num_ctx 4096
 PARAMETER top_k 80
 PARAMETER seed 42
-
-SYSTEM """
-    You are an amazing Golang programmer.
-    You're going to help me make Conway's "Game of Life" from start to end in a Linux environment.
-"""
