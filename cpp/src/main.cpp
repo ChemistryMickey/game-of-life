@@ -8,11 +8,11 @@
 
 using namespace std::chrono_literals;
 
-void parse_args(argparse::ArgumentParser *program, int argc, char **argv);
+void parse_args(argparse::ArgumentParser &program, int argc, char **argv);
 int main(int argc, char **argv)
 {
     argparse::ArgumentParser program("main");
-    parse_args(&program, argc, argv);
+    parse_args(program, argc, argv);
 
     Board board;
     if (program.get<bool>("--create_board"))
@@ -34,17 +34,17 @@ int main(int argc, char **argv)
     return 0; // this is technically unnecessary but it feels icky without it
 }
 
-void parse_args(argparse::ArgumentParser *program, int argc, char **argv)
+void parse_args(argparse::ArgumentParser &program, int argc, char **argv)
 {
-    program->add_argument("--create_board").help("Interactively create a board.").flag();
-    program->add_argument("--board_json")
+    program.add_argument("--create_board").help("Interactively create a board.").flag();
+    program.add_argument("--board_json")
         .help("Path to a JSON defining a board.")
         .default_value(std::string("../boards/glider.json"))
         .nargs(1);
 
     try
     {
-        program->parse_args(argc, argv);
+        program.parse_args(argc, argv);
     }
     catch (const std::exception &err)
     {
