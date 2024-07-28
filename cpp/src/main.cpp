@@ -1,7 +1,5 @@
-#include <fstream>
-#include <iostream>
+#include <filesystem>
 #include <thread>
-#include <vector>
 
 #include <board.hpp>
 #include <utils.hpp>
