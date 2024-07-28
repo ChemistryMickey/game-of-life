@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     if (program.get<bool>("--create_board"))
         board = board.interactive_create();
     else
-        board = Board{program.get<std::filesystem::path>("--board_json")};
+        board = Board{std::filesystem::path(program.get<std::string>("--board_json"))};
 
     const auto TIME_PER_FRAME = 0.1s; //[seconds]
     while (true)
@@ -39,7 +39,7 @@ void parse_args(argparse::ArgumentParser *program, int argc, char **argv)
     program->add_argument("--create_board").help("Interactively create a board.").flag();
     program->add_argument("--board_json")
         .help("Path to a JSON defining a board.")
-        .default_value(std::filesystem::path("../boards/glider.json"))
+        .default_value(std::string("../boards/glider.json"))
         .nargs(1);
 
     try
