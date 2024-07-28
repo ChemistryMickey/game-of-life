@@ -1,3 +1,5 @@
 python/__pycache__
 rust/target/*
 .push-to-git.sh
+.vscode/
+cpp/.vscode/
