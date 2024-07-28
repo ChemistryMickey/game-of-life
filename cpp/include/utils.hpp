@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <regex>
+#include <string>
 
-void clear_terminal()
-{
-    std::cout << "\x1b[H\x1b[2J";
-}
+void clear_terminal();
+void trim_whitespace(std::string &str_in);

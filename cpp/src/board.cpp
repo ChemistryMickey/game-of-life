@@ -1,19 +1,30 @@
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <nlohmann/json.hpp>
 
 #include <board.hpp>
+#include <utils.hpp>
 
 using json = nlohmann::json;
 
 Board::Board(std::filesystem::path json_path)
 {
     std::ifstream f(json_path);
+    if (!f.is_open())
+    {
+        std::cout << "Failed to open " << json_path << "!\n";
+        exit(1);
+    }
+
     json data = json::parse(f);
     this->cells = data;
+
+    // ifstream closes when f goes out of scope
 }
 
 Board::Board(size_t side_len)
@@ -88,4 +99,100 @@ void Board::apply_game_of_life_rules()
                 this->cells[i][j] = true;
         }
     }
+}
+
+std::array<size_t, 2> parse_addresses(std::string &in_line)
+{
+    std::array<size_t, 2> addrs{0, 0};
+    size_t pos = in_line.find(",");
+    if (pos != std::string::npos)
+    {
+        std::cerr << "Too few addresses!\n";
+        return {SIZE_MAX, SIZE_MAX};
+    }
+
+    try
+    {
+        addrs[0] = stoi(in_line.substr(0, pos));
+    }
+    catch (const std::exception &err)
+    {
+        std::cerr << err.what() << std::endl;
+        std::cerr << in_line << " is not a valid integer!\n";
+        std::exit(1);
+    }
+    in_line.erase(0, pos + 1);
+    try
+    {
+        addrs[1] = stoi(in_line);
+    }
+    catch (const std::exception &err)
+    {
+        std::cerr << err.what() << std::endl;
+        std::cerr << in_line << " is not a valid integer!\n";
+        std::exit(1);
+    }
+
+    return addrs;
+}
+
+Board Board::interactive_create()
+{
+    std::string in_line;
+
+    std::cout << "How many lines on each side is this board: ";
+    getline(std::cin, in_line);
+    size_t n_side = 0;
+    try
+    {
+        n_side = stoi(in_line);
+    }
+    catch (const std::exception &err)
+    {
+        std::cerr << err.what() << std::endl;
+        std::cerr << in_line << " is not a valid integer!\n";
+        std::exit(1);
+    }
+
+    Board board(n_side);
+
+    std::cout << "Add 'live' cell addresses in the form 'a, b' in the range " << n_side << "x" << n_side
+              << " (non-inclusive)\n(Enter -1 or a blank to continue)\n";
+    std::array<size_t, 2> addrs{0, 0};
+    while (true)
+    {
+        // This doesn't work as expected for some reason?!
+        getline(std::cin, in_line);
+        trim_whitespace(in_line);
+        if (in_line.compare("-1") || in_line.compare(""))
+            break;
+
+        // Get addresses
+        addrs = parse_addresses(in_line);
+        if (addrs[0] == SIZE_MAX)
+            continue;
+
+        for (auto addr : addrs)
+        {
+            if (addr >= n_side)
+            {
+                std::cerr << "Addresses must be in the range [0, " << n_side << " - 1]!\n";
+                continue;
+            }
+        }
+
+        in_line.clear();
+
+        board.cells[addrs[0]][addrs[1]] = true;
+        board.print();
+    }
+
+    std::string save_path = "";
+    getline(std::cin, save_path);
+    if (save_path.compare(""))
+    {
+        std::cout << "TODO: output JSON file\n";
+    }
+
+    return board;
 }
