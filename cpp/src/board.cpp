@@ -104,8 +104,8 @@ void Board::apply_game_of_life_rules()
 std::array<size_t, 2> parse_addresses(std::string &in_line)
 {
     std::array<size_t, 2> addrs{0, 0};
-    size_t pos = in_line.find(",");
-    if (pos != std::string::npos)
+    size_t pos = in_line.find(',');
+    if (pos == std::string::npos)
     {
         std::cerr << "Too few addresses!\n";
         return {SIZE_MAX, SIZE_MAX};
@@ -136,7 +136,7 @@ std::array<size_t, 2> parse_addresses(std::string &in_line)
     return addrs;
 }
 
-Board Board::interactive_create()
+Board interactive_create_board()
 {
     std::string in_line;
 
@@ -161,14 +161,29 @@ Board Board::interactive_create()
     std::array<size_t, 2> addrs{0, 0};
     while (true)
     {
-        // This doesn't work as expected for some reason?!
+        in_line.clear();
+#ifdef DEBUG_PRINT
+        std::cout << "Top of the loop: " << in_line << "\n";
+#endif
         getline(std::cin, in_line);
+#ifdef DEBUG_PRINT
+        std::cout << "Read line: " << in_line << "\n";
+#endif
         trim_whitespace(in_line);
-        if (in_line.compare("-1") || in_line.compare(""))
+#ifdef DEBUG_PRINT
+        std::cout << "Trimmed line: " << in_line << "\n";
+#endif
+        if (!in_line.compare("-1") || !in_line.compare(""))
+        {
+            std::cout << "Breaking!\n";
             break;
+        }
 
         // Get addresses
         addrs = parse_addresses(in_line);
+#ifdef DEBUG_PRINT
+        std::cout << "Addresses: [" << addrs[0] << ", " << addrs[1] << "]\n";
+#endif
         if (addrs[0] == SIZE_MAX)
             continue;
 
@@ -181,18 +196,17 @@ Board Board::interactive_create()
             }
         }
 
-        in_line.clear();
-
         board.cells[addrs[0]][addrs[1]] = true;
         board.print();
     }
 
-    std::string save_path = "";
-    getline(std::cin, save_path);
-    if (save_path.compare(""))
-    {
-        std::cout << "TODO: output JSON file\n";
-    }
+    std::cout << "TODO: output JSON file\n";
+    // std::string save_path = "";
+    // getline(std::cin, save_path);
+    // if (!save_path.compare(""))
+    // {
+    //     std::cout << "TODO: output JSON file\n";
+    // }
 
     return board;
 }

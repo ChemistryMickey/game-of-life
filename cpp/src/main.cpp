@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
     Board board;
     if (program.get<bool>("--create_board"))
-        board = board.interactive_create();
+        board = interactive_create_board();
     else
         board = Board{std::filesystem::path(program.get<std::string>("--board_json"))};
 
