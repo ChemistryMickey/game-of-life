@@ -137,7 +137,7 @@ pub fn interactiveCreateBoard() !Board {
 
         raw_line = try stdin.readUntilDelimiter(buffer, '\n');
         if (std.mem.eql(u8, raw_line, "-1") or std.mem.eql(u8, raw_line, "")) break;
-        const address: [2]usize = get_address(&raw_line, n_sides) catch |err| {
+        const address: [2]usize = getAddress(&raw_line, n_sides) catch |err| {
             try stdout.print("\nInvalid address, {any}! Enter an address in the form 'a, b' (the space is important) with a and b in the range [{}, {})\n", .{ err, 0, n_sides });
             continue;
         };
@@ -149,7 +149,7 @@ pub fn interactiveCreateBoard() !Board {
     return board;
 }
 
-fn get_address(raw_line: *[]u8, n_sides: usize) ![2]usize {
+fn getAddress(raw_line: *[]u8, n_sides: usize) ![2]usize {
     var delim_ind: isize = -1;
     for (raw_line.*, 0..) |char, i| {
         if (char == ',') {
