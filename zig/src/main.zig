@@ -17,6 +17,6 @@ pub fn main() !void {
 
         try board.applyGameOfLifeRules();
 
-        std.time.sleep(WAIT_TIME_SEC * 1e9);
+        utils.sleepSec(WAIT_TIME_SEC);
     }
 }
