@@ -118,6 +118,7 @@ pub const Board = struct {
 
 pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments, CommaNotFound, AddressOutOfBounds };
 
+/// Create a board from user input, selecting how large the board will be and individually activing cells
 pub fn interactiveCreateBoard() !Board {
     const stdout = std.io.getStdOut().writer();
     const stdin = std.io.getStdIn().reader();
@@ -142,7 +143,7 @@ pub fn interactiveCreateBoard() !Board {
             continue;
         };
 
-        board.cells.items[address[0]].items[address[1]] = true;
+        board.cells.items[address[0]].items[address[1]] = !board.cells.items[address[0]].items[address[1]];
         try board.print();
     }
 
