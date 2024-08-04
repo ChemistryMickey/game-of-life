@@ -42,3 +42,29 @@ It knew that serde can be used to deserialize but codellama neither added the de
 Also, the std::fs::read doesn't require a buffer input; that's an input required for std::io::stdin().read.
 
 Not too shabby considering the proportion of Rust code probably available to codellama for training and the bias for Python.
+
+## C++ Conclusion:
+It knew about nlohmann for JSON parsing so it's not all bad!
+Some of the snippets using nlohmann's JSON were also reasonably functional. Never quite what I asked but again, not too shabby.
+
+It also knew about argparse and that's one library I hadn't used before.
+Here I think the LLM really shines. It knew a corner of the ecosystem I didn't and even though the code it produced wasn't great, it still offered a good hook.
+
+The question then becomes "is that hook better than a quick google?" to which I can say "probably?".
+Especially as google moves towards using LLMs for their responses in their own right, these LLMs will become the curators of information in a way that StackOverflow was before.
+I'm unsure that's a good thing (again, the code codellama produced was often not functional) but until the AI bubble pops, it's how it will be.
+
+## Zig Conclusion:
+**NOTE**: This technically broke the rules of the challenge because codellama didn't know zig at all. So I blustered through [the zig guide](https://zig.guide). 
+
+Additionally, considering zig's still changing quite rapidly, I'm not sure it would produce functional code just because of version changes.
+Async, for example, is no longer supported as of zig 0.11.
+
+So the zig conclusion is "I just gotta get better at zig".
+I still want to to do RAII which isn't ziggy.
+Zig has some cool features but the only one that really stood out here was the `defer` key for care-free memory cleanup.
+In a project of this size though, memory cleanup isn't strictly necessary. 
+Still a nice feature though.
+
+It's also nice that JSON is supported as part of zig's standard library!
+A real hallmark of these modern languages is that they have excellent support for current standards (not a dig on C++, it came before JSON after all).
