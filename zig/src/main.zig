@@ -8,14 +8,14 @@ const allocator = gpa.allocator();
 const WAIT_TIME_SEC = 0.1;
 
 pub fn main() !void {
-    var board = try board_pkg.Board.from_json("../boards/acorn.json");
-    defer board.deinit_cells();
+    var board = try board_pkg.Board.fromJson("../boards/acorn.json");
+    defer board.deinitCells();
 
     while (true) {
-        try utils.clear_terminal();
+        try utils.clearTerminal();
         try board.print();
 
-        try board.apply_game_of_life_rules();
+        try board.applyGameOfLifeRules();
 
         std.time.sleep(WAIT_TIME_SEC * 1e9);
     }

@@ -8,9 +8,9 @@ pub const Board = struct {
 
     /// Allocates a std array list of std array lists. Use board.deinit to remove these cleanly.
     ///     This is technically non-ziggy because it allocates internally which is OO design
-    pub fn from_json(path: []const u8) !Board {
-        var board = try Board.from_size(0);
-        board.deinit_cells(); // clear out the cells because they're going to be replaced
+    pub fn fromJson(path: []const u8) !Board {
+        var board = try Board.fromSize(0);
+        board.deinitCells(); // clear out the cells because they're going to be replaced
 
         const buffer = try std.fs.cwd().readFileAlloc(allocator, path, MAX_JSON_SIZE);
         defer allocator.free(buffer);
@@ -34,7 +34,7 @@ pub const Board = struct {
 
     /// Allocates a std array list of std array lists. Use board.deinit to remove these cleanly.
     ///     This is technically non-ziggy because it allocates internally which is OO design
-    pub fn from_size(side_len: usize) !Board {
+    pub fn fromSize(side_len: usize) !Board {
         var array_list = std.ArrayList(std.ArrayList(bool)).init(allocator);
         for (0..side_len) |_| {
             var sub_array = std.ArrayList(bool).init(allocator);
@@ -47,16 +47,16 @@ pub const Board = struct {
     /// Applies the rules for game of life. They are the following:
     ///     Dies if n_neighbors is not 2 or 3
     ///     Lives/comes to life if n_neighbors is 3
-    pub fn apply_game_of_life_rules(self: *Board) !void {
+    pub fn applyGameOfLifeRules(self: *Board) !void {
         const n_side = self.cells.items.len;
-        var life_board = try Board.from_size(n_side);
-        defer life_board.deinit_cells();
-        var death_board = try Board.from_size(n_side);
-        defer death_board.deinit_cells();
+        var life_board = try Board.fromSize(n_side);
+        defer life_board.deinitCells();
+        var death_board = try Board.fromSize(n_side);
+        defer death_board.deinitCells();
 
         for (0..n_side) |i| {
             for (0..n_side) |j| {
-                const n_live_neighbors = self.get_n_live_neighbors(@intCast(i), @intCast(j));
+                const n_live_neighbors = self.getNLiveNeighbors(@intCast(i), @intCast(j));
 
                 const should_die = (self.cells.items[i].items[j] and n_live_neighbors != 2 and n_live_neighbors != 3);
                 if (should_die) death_board.cells.items[i].items[j] = true;
@@ -75,13 +75,13 @@ pub const Board = struct {
     }
 
     /// Deallocates all sub-ArrayLists before deallocating top level ArrayList
-    pub fn deinit_cells(self: *Board) void {
+    pub fn deinitCells(self: *Board) void {
         for (self.cells.items) |array_list| array_list.deinit();
         self.cells.deinit();
     }
 
     /// Gets the number of adjacent live neighbors at a cell address i and j
-    pub fn get_n_live_neighbors(self: *Board, i: isize, j: isize) usize {
+    pub fn getNLiveNeighbors(self: *Board, i: isize, j: isize) usize {
         var n_live_neighbors: usize = 0;
         const n_side = self.cells.items.len;
         const steps = [_]isize{ -1, 0, 1 };
@@ -118,15 +118,15 @@ pub const Board = struct {
 
 // Tests
 test "Board from size" {
-    var board = try Board.from_size(10);
-    defer board.deinit_cells();
+    var board = try Board.fromSize(10);
+    defer board.deinitCells();
 
     try std.testing.expect(board.cells.items[3].items[5] == false);
 }
 
 test "Board from JSON" {
-    var board = try Board.from_json("../boards/spinner.json");
-    defer board.deinit_cells();
+    var board = try Board.fromJson("../boards/spinner.json");
+    defer board.deinitCells();
 
     try std.testing.expect(board.cells.items[3].items[2] == true);
     try std.testing.expect(board.cells.items[3].items[3] == true);
@@ -134,8 +134,8 @@ test "Board from JSON" {
 }
 
 test "Board print" {
-    var board = try Board.from_size(3);
-    defer board.deinit_cells();
+    var board = try Board.fromSize(3);
+    defer board.deinitCells();
 
     board.cells.items[1].items[1] = true;
 
@@ -143,20 +143,20 @@ test "Board print" {
 }
 
 test " Get live neighbors" {
-    var board = try Board.from_size(3);
-    defer board.deinit_cells();
+    var board = try Board.fromSize(3);
+    defer board.deinitCells();
 
     board.cells.items[1].items[1] = true;
     board.cells.items[1].items[2] = true;
-    try std.testing.expect(board.get_n_live_neighbors(2, 1) == 2);
+    try std.testing.expect(board.getNLiveNeighbors(2, 1) == 2);
 
     board.cells.items[1].items[0] = true;
-    try std.testing.expect(board.get_n_live_neighbors(2, 1) == 3);
+    try std.testing.expect(board.getNLiveNeighbors(2, 1) == 3);
 }
 
 test "Apply rules" {
-    var board = try Board.from_size(3);
-    defer board.deinit_cells();
+    var board = try Board.fromSize(3);
+    defer board.deinitCells();
 
     // Create a horizontal "Spinner"
     board.cells.items[1].items[0] = true;
@@ -164,7 +164,7 @@ test "Apply rules" {
     board.cells.items[1].items[2] = true;
 
     // Let it spin!
-    try board.apply_game_of_life_rules();
+    try board.applyGameOfLifeRules();
 
     try std.testing.expect(board.cells.items[0].items[1] == true);
     try std.testing.expect(board.cells.items[2].items[1] == true);
@@ -172,7 +172,7 @@ test "Apply rules" {
     try std.testing.expect(board.cells.items[1].items[1] == true);
     try std.testing.expect(board.cells.items[1].items[2] == false);
 
-    try board.apply_game_of_life_rules();
+    try board.applyGameOfLifeRules();
 
     try std.testing.expect(board.cells.items[0].items[1] == false);
     try std.testing.expect(board.cells.items[2].items[1] == false);
