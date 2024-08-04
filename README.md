@@ -68,3 +68,7 @@ Still a nice feature though.
 
 It's also nice that JSON is supported as part of zig's standard library!
 A real hallmark of these modern languages is that they have excellent support for current standards (not a dig on C++, it came before JSON after all).
+
+A final note on zig: As of 2024-08-03, the LSP in VSCode doesn't handle the unwrapping of nested containers correctly.
+When unwrapping an `ArrayList` of `ArrayList(bool)`s, the first layer should produce an `ArrayList(bool)` but incorrectly inferred that to be the very base type `bool`. 
+The LSP, however, wasn't complaining when I then went and continued unwrapping what it thought was just a bool such that it might just be a display bug.
