@@ -7,16 +7,7 @@ pub const Board = struct {
     cells: std.ArrayList(std.ArrayList(bool)),
 
     /// Allocates a std array list of std array lists. Use board.deinit to remove these cleanly.
-    pub fn from_size(side_len: usize) !Board {
-        var array_list = std.ArrayList(std.ArrayList(bool)).init(allocator);
-        for (0..side_len) |_| {
-            var sub_array = std.ArrayList(bool).init(allocator);
-            try sub_array.appendNTimes(false, @as(usize, side_len));
-            try array_list.append(sub_array);
-        }
-        return Board{ .cells = array_list };
-    }
-
+    ///     This is technically non-ziggy because it allocates internally which is OO design
     pub fn from_json(path: []const u8) !Board {
         var board = try Board.from_size(0);
         board.deinit_cells(); // clear out the cells because they're going to be replaced
@@ -41,46 +32,21 @@ pub const Board = struct {
         return board;
     }
 
-    /// Deallocates all sub-ArrayLists before deallocating top level ArrayList
-    pub fn deinit_cells(self: *Board) void {
-        for (self.cells.items) |array_list| array_list.deinit();
-        self.cells.deinit();
-    }
-
-    pub fn print(self: *Board) !void {
-        const stdout = std.io.getStdOut().writer();
-        for (self.cells.items) |array_list| {
-            for (array_list.items) |val| {
-                if (val == true) {
-                    try stdout.writeAll("▣  ");
-                } else {
-                    try stdout.writeAll(".  ");
-                }
-            }
-            try stdout.writeAll("\n");
+    /// Allocates a std array list of std array lists. Use board.deinit to remove these cleanly.
+    ///     This is technically non-ziggy because it allocates internally which is OO design
+    pub fn from_size(side_len: usize) !Board {
+        var array_list = std.ArrayList(std.ArrayList(bool)).init(allocator);
+        for (0..side_len) |_| {
+            var sub_array = std.ArrayList(bool).init(allocator);
+            try sub_array.appendNTimes(false, @as(usize, side_len));
+            try array_list.append(sub_array);
         }
+        return Board{ .cells = array_list };
     }
 
-    pub fn get_n_live_neighbors(self: *Board, i: isize, j: isize) usize {
-        var n_live_neighbors: usize = 0;
-        const n_side = self.cells.items.len;
-        const steps = [_]isize{ -1, 0, 1 };
-
-        for (steps) |i_step| {
-            for (steps) |j_step| {
-                const is_self = ((i_step == 0) and (j_step == 0));
-                if (is_self) continue;
-
-                const out_of_bounds = ((i + i_step < 0) or (j + j_step < 0) or (i + i_step >= n_side) or (j + j_step >= n_side));
-                if (out_of_bounds) continue;
-
-                if (self.cells.items[@intCast(i + i_step)].items[@intCast(j + j_step)])
-                    n_live_neighbors += 1;
-            }
-        }
-        return n_live_neighbors;
-    }
-
+    /// Applies the rules for game of life. They are the following:
+    ///     Dies if n_neighbors is not 2 or 3
+    ///     Lives/comes to life if n_neighbors is 3
     pub fn apply_game_of_life_rules(self: *Board) !void {
         const n_side = self.cells.items.len;
         var life_board = try Board.from_size(n_side);
@@ -107,8 +73,50 @@ pub const Board = struct {
             }
         }
     }
+
+    /// Deallocates all sub-ArrayLists before deallocating top level ArrayList
+    pub fn deinit_cells(self: *Board) void {
+        for (self.cells.items) |array_list| array_list.deinit();
+        self.cells.deinit();
+    }
+
+    /// Gets the number of adjacent live neighbors at a cell address i and j
+    pub fn get_n_live_neighbors(self: *Board, i: isize, j: isize) usize {
+        var n_live_neighbors: usize = 0;
+        const n_side = self.cells.items.len;
+        const steps = [_]isize{ -1, 0, 1 };
+
+        for (steps) |i_step| {
+            for (steps) |j_step| {
+                const is_self = ((i_step == 0) and (j_step == 0));
+                if (is_self) continue;
+
+                const out_of_bounds = ((i + i_step < 0) or (j + j_step < 0) or (i + i_step >= n_side) or (j + j_step >= n_side));
+                if (out_of_bounds) continue;
+
+                if (self.cells.items[@intCast(i + i_step)].items[@intCast(j + j_step)])
+                    n_live_neighbors += 1;
+            }
+        }
+        return n_live_neighbors;
+    }
+
+    pub fn print(self: *Board) !void {
+        const stdout = std.io.getStdOut().writer();
+        for (self.cells.items) |array_list| {
+            for (array_list.items) |val| {
+                if (val == true) {
+                    try stdout.writeAll("▣  ");
+                } else {
+                    try stdout.writeAll(".  ");
+                }
+            }
+            try stdout.writeAll("\n");
+        }
+    }
 };
 
+// Tests
 test "Board from size" {
     var board = try Board.from_size(10);
     defer board.deinit_cells();
