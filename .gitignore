@@ -3,6 +3,7 @@
 python/__pycache__
 
 rust/target/*
+zig/.zig-cache
 
 .vscode/
 cpp/.vscode/

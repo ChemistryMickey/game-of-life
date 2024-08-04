@@ -116,6 +116,13 @@ pub const Board = struct {
     }
 };
 
+pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments };
+
+pub fn interactiveCreateBoard() !Board {
+    // TODO
+    return Board.fromSize(0);
+}
+
 // Tests
 test "Board from size" {
     var board = try Board.fromSize(10);
