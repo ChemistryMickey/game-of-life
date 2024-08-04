@@ -116,11 +116,58 @@ pub const Board = struct {
     }
 };
 
-pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments };
+pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments, CommaNotFound, AddressOutOfBounds };
 
 pub fn interactiveCreateBoard() !Board {
-    // TODO
-    return Board.fromSize(0);
+    const stdout = std.io.getStdOut().writer();
+    const stdin = std.io.getStdIn().reader();
+
+    try stdout.writeAll("How many lines on each side is this board: ");
+
+    const buffer = try allocator.alloc(u8, 20);
+    defer allocator.free(buffer);
+
+    var raw_line = try stdin.readUntilDelimiter(buffer, '\n');
+    const n_sides = try std.fmt.parseInt(usize, raw_line, 10);
+    var board = try Board.fromSize(n_sides);
+
+    try stdout.print("Add 'live' cell addresses in the form 'a, b' in the range [{}, {})\nEnter blank or -1 to continue\n", .{ 0, n_sides });
+    while (true) {
+        try stdout.writeAll("Address: ");
+
+        raw_line = try stdin.readUntilDelimiter(buffer, '\n');
+        if (std.mem.eql(u8, raw_line, "-1") or std.mem.eql(u8, raw_line, "")) break;
+        const address: [2]usize = get_address(&raw_line, n_sides) catch |err| {
+            try stdout.print("\nInvalid address, {any}! Enter an address in the form 'a, b' (the space is important) with a and b in the range [{}, {})\n", .{ err, 0, n_sides });
+            continue;
+        };
+
+        board.cells.items[address[0]].items[address[1]] = true;
+        try board.print();
+    }
+
+    return board;
+}
+
+fn get_address(raw_line: *[]u8, n_sides: usize) ![2]usize {
+    var delim_ind: isize = -1;
+    for (raw_line.*, 0..) |char, i| {
+        if (char == ',') {
+            delim_ind = @intCast(i);
+            break;
+        }
+    }
+    if (delim_ind == -1) return BoardConstructionErrors.CommaNotFound;
+
+    const slice_1 = raw_line.*[0..@intCast(delim_ind)];
+    const slice_2 = raw_line.*[@intCast(delim_ind + 2)..];
+    const ind_1 = try std.fmt.parseInt(usize, slice_1, 10);
+    const ind_2 = try std.fmt.parseInt(usize, slice_2, 10);
+    const arr = [2]usize{ ind_1, ind_2 };
+    for (arr) |val|
+        if (val > n_sides) return BoardConstructionErrors.AddressOutOfBounds;
+
+    return arr;
 }
 
 // Tests
