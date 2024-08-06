@@ -116,7 +116,7 @@ pub const Board = struct {
     }
 };
 
-pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments, CommaNotFound, AddressOutOfBounds };
+pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments, CommaNotFound, AddressOutOfBounds, HelpTextRequest };
 
 /// Create a board from user input, selecting how large the board will be and individually activing cells
 pub fn interactiveCreateBoard() !Board {
