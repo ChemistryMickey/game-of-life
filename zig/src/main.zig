@@ -45,6 +45,16 @@ fn createBoardFromInputArguments() !board_pkg.Board {
             return board_pkg.Board.fromJson(args[i + 1]);
         } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
             return board_pkg.BoardConstructionErrors.HelpTextRequest;
+        } else if (std.mem.eql(u8, arg, "--random_board")) {
+            if (args.len < i + 1)
+                return board_pkg.BoardConstructionErrors.ExpectedArgument;
+
+            const n_sides: usize = try std.fmt.parseInt(usize, args[i + 1], 10);
+            const rand_threshold: f64 = try std.fmt.parseFloat(f64, args[i + 2]);
+
+            if (rand_threshold > 1 or rand_threshold < 0)
+                return board_pkg.BoardConstructionErrors.ValueOutOfBounds;
+            return board_pkg.Board.randomBoard(n_sides, rand_threshold);
         }
     }
 
@@ -58,6 +68,7 @@ fn _printHelpText() !void {
         \\ CLI Options:
         \\      --create_board - Interactively create a board (recommend just using the board-creator)
         \\      --board_json <path_to_board_json> - Load and run a board defined by a JSON
+        \\      --random_board <n_squares_per_side [1, N]> <random_threshold [0, 1]> - Create a board with random live cells. 
         \\      -h or --help - Show this help text
         \\
     ;

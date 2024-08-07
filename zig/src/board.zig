@@ -3,6 +3,15 @@ var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const allocator = gpa.allocator();
 const MAX_JSON_SIZE = 2_000_000;
 
+pub const BoardConstructionErrors = error{
+    ExpectedArgument,
+    UnrecognizedArguments,
+    CommaNotFound,
+    AddressOutOfBounds,
+    HelpTextRequest,
+    ValueOutOfBounds,
+};
+
 pub const Board = struct {
     cells: std.ArrayList(std.ArrayList(bool)),
 
@@ -28,6 +37,29 @@ pub const Board = struct {
         }
 
         board.cells = bool_matrix;
+
+        return board;
+    }
+
+    /// Allocates a std array list of std array lists. Use board.deinit to remove these cleanly.
+    ///     This is technically non-ziggy because it allocates internally which is OO design
+    pub fn randomBoard(n_sides: usize, rand_threshold: f64) !Board {
+        var board = try Board.fromSize(n_sides);
+
+        // Make PRNG
+        var prng = std.rand.DefaultPrng.init(blk: {
+            var seed: u64 = undefined;
+            try std.posix.getrandom(std.mem.asBytes(&seed));
+            break :blk seed;
+        });
+        const rand = prng.random();
+
+        for (0..n_sides) |i| {
+            for (0..n_sides) |j| {
+                if (rand.float(f64) > rand_threshold)
+                    board.cells.items[i].items[j] = true;
+            }
+        }
 
         return board;
     }
@@ -115,8 +147,6 @@ pub const Board = struct {
         }
     }
 };
-
-pub const BoardConstructionErrors = error{ ExpectedArgument, UnrecognizedArguments, CommaNotFound, AddressOutOfBounds, HelpTextRequest };
 
 /// Create a board from user input, selecting how large the board will be and individually activing cells
 pub fn interactiveCreateBoard() !Board {
