@@ -46,7 +46,7 @@ fn createBoardFromInputArguments() !board_pkg.Board {
         } else if (std.mem.eql(u8, arg, "-h") or std.mem.eql(u8, arg, "--help")) {
             return board_pkg.BoardConstructionErrors.HelpTextRequest;
         } else if (std.mem.eql(u8, arg, "--random_board")) {
-            if (args.len < i + 1)
+            if (args.len < i + 2)
                 return board_pkg.BoardConstructionErrors.ExpectedArgument;
 
             const n_sides: usize = try std.fmt.parseInt(usize, args[i + 1], 10);
